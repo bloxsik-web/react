@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>dark fluid waves</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #05070f;
+            overflow: hidden;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let w, h;
+        let time = 0;
+        
+        function resize() {
+            w = window.innerWidth;
+            h = window.innerHeight;
+            canvas.width = w;
+            canvas.height = h;
+        }
+        
+        function draw() {
+            time += 0.01;
+            
+            ctx.clearRect(0, 0, w, h);
+            
+            const grad = ctx.createLinearGradient(0, 0, w, h);
+            grad.addColorStop(0, '#03050c');
+            grad.addColorStop(0.4, '#080e1a');
+            grad.addColorStop(0.7, '#050812');
+            grad.addColorStop(1, '#020308');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+            
+            const gridSpacing = 32;
+            const cols = Math.ceil(w / gridSpacing) + 3;
+            const rows = Math.ceil(h / gridSpacing) + 3;
+            
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    const x = i * gridSpacing - gridSpacing;
+                    const y = j * gridSpacing - gridSpacing;
+                    
+                    const waveX = Math.sin(x * 0.015 + time) * Math.cos(y * 0.01 + time * 0.6);
+                    const waveY = Math.cos(y * 0.018 - time * 0.9) * 0.7;
+                    const waveDiag = Math.sin((x + y) * 0.012 - time * 1.1) * 0.5;
+                    const waveComplex = Math.sin(x * 0.008) * Math.cos(y * 0.008 + time) * 0.8;
+                    
+                    let intensity = (waveX + waveY + waveDiag + waveComplex) / 2.2;
+                    intensity = Math.max(-0.7, Math.min(0.7, intensity));
+                    
+                    const normInt = (intensity + 0.7) / 1.4;
+                    
+                    let r = 20 + 35 * normInt;
+                    let g = 45 + 70 * normInt;
+                    let b = 100 + 100 * normInt;
+                    
+                    r = Math.min(75, Math.max(8, r));
+                    g = Math.min(120, Math.max(20, g));
+                    b = Math.min(200, Math.max(45, b));
+                    
+                    const alpha = 0.3 + normInt * 0.45;
+                    const radius = 2 + Math.abs(intensity) * 5.5;
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b)}, ${alpha * 0.65})`;
+                    ctx.fill();
+                    
+                    if (Math.abs(intensity) > 0.3) {
+                        ctx.beginPath();
+                        ctx.arc(x, y, radius * 0.5, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(110, 160, 240, ${alpha * 0.4})`;
+                        ctx.fill();
+                    }
+                }
+            }
+            
+            const overlayGrad = ctx.createRadialGradient(w * 0.3, h * 0.4, 100, w * 0.7, h * 0.6, w * 0.9);
+            overlayGrad.addColorStop(0, 'rgba(4, 8, 18, 0)');
+            overlayGrad.addColorStop(0.5, 'rgba(6, 10, 20, 0.15)');
+            overlayGrad.addColorStop(1, 'rgba(2, 3, 8, 0.45)');
+            ctx.fillStyle = overlayGrad;
+            ctx.fillRect(0, 0, w, h);
+            
+            ctx.fillStyle = 'rgba(3, 5, 12, 0.08)';
+            ctx.fillRect(0, 0, w, h);
+        }
+        
+        function loop() {
+            draw();
+            requestAnimationFrame(loop);
+        }
+        
+        window.addEventListener('resize', () => {
+            resize();
+        });
+        
+        resize();
+        loop();
+    </script>
+</body>
+</html>

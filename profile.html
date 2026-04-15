@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React Client - Profile</title>
+    <link rel="stylesheet" href="profile.css" />
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    <div class="page">
+        <header class="topbar">
+            <div class="logo"><img src="asset/logo.png" alt="" class="logos"></div>
+
+            <div class="top-buttons">
+                <button class="top-btn">Форум</button>
+                <button class="top-btn active-top">Профиль</button>
+            </div>
+        </header>
+
+        <main class="profile-wrapper">
+            <section class="profile-card">
+                <div class="avatar-wrap">
+                    <img
+                        class="avatar"
+                        src="asset/avatar-placeholder.jpg"
+                        alt="avatar"
+                    />
+                </div>
+
+                <div class="profile-info">
+                    <div class="nickname" id="nickname">Загрузка</div>
+                    <div class="uid" id="uid">uid: Загрузка</div>
+                </div>
+            </section>
+
+            <div class="tabs">
+                <button class="tab-btn active" id="infoTab">Информация</button>
+                <button class="tab-btn" id="shopTab">Магазин</button>
+            </div>
+
+            <section class="tab-content active" id="infoContent">
+                <div class="balance-card">
+                    <div class="balance-left">
+                        <div class="balance-title">Баланс</div>
+                        <div class="balance-value" id="balance">Загрузка</div>
+                    </div>
+
+                    <button class="deposit-btn">Пополнить</button>
+                </div>
+
+                <div class="details-card">
+                    <div id="role">Role: Загрузка</div>
+                    <div>HWID: None</div>
+                    <div>Sub end: 01.01.2038</div>
+                </div>
+            </section>
+
+            <section class="tab-content" id="shopContent">
+                <div class="shop-card">
+                    <div class="shop-item">
+                        <div class="item-image">
+                            <div class="cross"></div>
+                        </div>
+                        <div class="item-title">плащ “крест”</div>
+                        <div class="item-price">33₽</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let w, h;
+        let dust = [];
+
+        function resizeCanvas() {
+            w = window.innerWidth;
+            h = window.innerHeight;
+            canvas.width = w;
+            canvas.height = h;
+        }
+
+        function initDust() {
+            dust = [];
+            const count = Math.floor((w * h) / 7000);
+
+            for (let i = 0; i < count; i++) {
+                dust.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.18,
+                    vy: (Math.random() - 0.5) * 0.12 - 0.03,
+                    size: 0.8 + Math.random() * 2.2,
+                    alpha: 0.08 + Math.random() * 0.25
+                });
+            }
+        }
+
+        function updateDust() {
+            for (const p of dust) {
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.x < -20) p.x = w + 20;
+                if (p.x > w + 20) p.x = -20;
+                if (p.y < -20) p.y = h + 20;
+                if (p.y > h + 20) p.y = -20;
+            }
+        }
+
+        function drawBackground() {
+            ctx.clearRect(0, 0, w, h);
+
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, w, h);
+
+            const bottomGlow = ctx.createLinearGradient(0, h, 0, h - h * 0.75);
+            bottomGlow.addColorStop(0, 'rgba(20, 80, 210, 0.42)');
+            bottomGlow.addColorStop(0.35, 'rgba(15, 55, 170, 0.22)');
+            bottomGlow.addColorStop(0.7, 'rgba(8, 30, 110, 0.08)');
+            bottomGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = bottomGlow;
+            ctx.fillRect(0, 0, w, h);
+
+            const leftGlow = ctx.createLinearGradient(0, 0, w * 0.3, 0);
+            leftGlow.addColorStop(0, 'rgba(10, 50, 150, 0.10)');
+            leftGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = leftGlow;
+            ctx.fillRect(0, 0, w, h);
+
+            const rightGlow = ctx.createLinearGradient(w, 0, w - w * 0.3, 0);
+            rightGlow.addColorStop(0, 'rgba(10, 50, 150, 0.08)');
+            rightGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = rightGlow;
+            ctx.fillRect(0, 0, w, h);
+
+            const radial = ctx.createRadialGradient(
+                w * 0.5, h - 40, 20,
+                w * 0.5, h - 120, h * 0.85
+            );
+            radial.addColorStop(0, 'rgba(60, 130, 240, 0.18)');
+            radial.addColorStop(0.5, 'rgba(30, 80, 180, 0.08)');
+            radial.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = radial;
+            ctx.fillRect(0, 0, w, h);
+        }
+
+        function drawDust() {
+            for (const p of dust) {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(80, 130, 220, ${p.alpha})`;
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(p.x - p.size * 0.35, p.y - p.size * 0.35, p.size * 0.45, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(150, 190, 255, ${p.alpha * 0.45})`;
+                ctx.fill();
+            }
+        }
+
+        function animateBg() {
+            updateDust();
+            drawBackground();
+            drawDust();
+            requestAnimationFrame(animateBg);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initDust();
+        });
+
+        resizeCanvas();
+        initDust();
+        animateBg();
+    </script>
+
+    <script>
+        const infoTab = document.getElementById("infoTab");
+        const shopTab = document.getElementById("shopTab");
+        const infoContent = document.getElementById("infoContent");
+        const shopContent = document.getElementById("shopContent");
+
+        infoTab.addEventListener("click", () => {
+            infoTab.classList.add("active");
+            shopTab.classList.remove("active");
+
+            infoContent.classList.add("active");
+            shopContent.classList.remove("active");
+        });
+
+        shopTab.addEventListener("click", () => {
+            shopTab.classList.add("active");
+            infoTab.classList.remove("active");
+
+            shopContent.classList.add("active");
+            infoContent.classList.remove("active");
+        });
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC5OL0rFQBE71Uj_GKm81THx8X_khXRgyI",
+            authDomain: "react-ae1b6.firebaseapp.com",
+            databaseURL: "https://react-ae1b6-default-rtdb.firebaseio.com",
+            projectId: "react-ae1b6",
+            storageBucket: "react-ae1b6.firebasestorage.app",
+            messagingSenderId: "309586870564",
+            appId: "1:309586870564:web:e6f28608abd7409a1633b1",
+            measurementId: "G-9TKD6SVYMM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const nicknameEl = document.getElementById("nickname");
+        const uidEl = document.getElementById("uid");
+        const balanceEl = document.getElementById("balance");
+        const roleEl = document.getElementById("role");
+
+        async function loadProfile() {
+            const currentUserUID = sessionStorage.getItem("currentUserUID");
+
+            if (!currentUserUID) {
+                window.location.href = "index.html";
+                return;
+            }
+
+            try {
+                const snapshot = await get(ref(db, "users/" + currentUserUID));
+
+                if (!snapshot.exists()) {
+                    alert("Пользователь не найден");
+                    sessionStorage.removeItem("currentUserUID");
+                    sessionStorage.removeItem("currentUserLogin");
+                    window.location.href = "index.html";
+                    return;
+                }
+
+                const userData = snapshot.val();
+
+                nicknameEl.textContent = userData.Login || "Без ника";
+                uidEl.textContent = "uid: " + (userData.UID ?? "None");
+                balanceEl.textContent = (userData.Balance ?? 0) + "₽";
+                roleEl.textContent = "Role: " + (userData.Role || "User");
+            } catch (error) {
+                console.error("Ошибка загрузки профиля:", error);
+                nicknameEl.textContent = "Ошибка загрузки";
+                uidEl.textContent = "uid: error";
+                balanceEl.textContent = "???₽";
+            }
+        }
+
+        loadProfile();
+    </script>
+</body>
+</html>

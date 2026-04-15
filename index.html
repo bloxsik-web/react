@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>React Client - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #000;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .auth-wrapper {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translateY(-54px);
+        }
+
+        .logo {
+            width: 72px;
+            height: 72px;
+            object-fit: contain;
+            margin-bottom: 18px;
+            user-select: none;
+            pointer-events: none;
+            opacity: 0.96;
+        }
+
+        .auth-box {
+            width: 100%;
+            padding: 26px 22px 18px;
+            border-radius: 20px;
+            background: rgba(8, 8, 10, 0.42);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(18px);
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03);
+        }
+
+        .tabs {
+            width: max-content;
+            margin: 0 auto 22px;
+            padding: 4px;
+            display: flex;
+            gap: 4px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.44);
+            height: 34px;
+            padding: 0 16px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.2px;
+            transition: 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: rgba(255, 255, 255, 0.76);
+        }
+
+        .tab-btn.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.10);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+        }
+
+        .form-area {
+            width: 100%;
+        }
+
+        .form-panel {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-panel.active {
+            display: flex;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .input-group label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.34);
+            padding-left: 2px;
+        }
+
+        .input-group input {
+            width: 100%;
+            height: 48px;
+            padding: 0 14px;
+            border: none;
+            border-radius: 14px;
+            outline: none;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.045);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+            transition: 0.18s ease;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.22);
+        }
+
+        .input-group input:focus {
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow:
+                inset 0 0 0 1px rgba(120, 170, 255, 0.30),
+                0 0 0 4px rgba(80, 130, 255, 0.08);
+        }
+
+        .submit-btn {
+            margin-top: 8px;
+            height: 50px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            color: #fff;
+            background: rgba(82, 127, 220, 0.18);
+            box-shadow:
+                inset 0 0 0 1px rgba(120, 170, 255, 0.16),
+                0 8px 30px rgba(20, 40, 90, 0.22);
+            transition: 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            background: rgba(92, 138, 235, 0.24);
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .register-footer {
+            margin-top: 14px;
+            font-size: 11px;
+            line-height: 1.5;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.24);
+            min-height: 32px;
+            transition: 0.22s ease;
+            padding: 0 6px;
+        }
+
+        .register-footer.hidden {
+            opacity: 0;
+            visibility: hidden;
+            height: 0;
+            min-height: 0;
+            margin-top: 0;
+        }
+
+        .status-text {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 13px;
+            min-height: 18px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        @media (max-width: 520px) {
+            .auth-container {
+                transform: translateY(-36px);
+                max-width: 100%;
+            }
+
+            .logo {
+                width: 64px;
+                height: 64px;
+                margin-bottom: 16px;
+            }
+
+            .auth-box {
+                padding: 22px 16px 16px;
+                border-radius: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <div class="auth-wrapper">
+        <div class="auth-container">
+            <img src="asset/logo.png" alt="Logo" class="logo">
+
+            <div class="auth-box">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="login">Логин</button>
+                    <button class="tab-btn" data-tab="register">Регистрация</button>
+                </div>
+
+                <div class="form-area">
+                    <div class="form-panel active" id="login-panel">
+                        <div class="input-group">
+                            <label for="login-nickname">Никнейм</label>
+                            <input type="text" id="login-nickname" placeholder="Введите никнейм">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="login-password">Пароль</label>
+                            <input type="password" id="login-password" placeholder="Введите пароль">
+                        </div>
+
+                        <button class="submit-btn" id="login-btn">Войти</button>
+                    </div>
+
+                    <div class="form-panel" id="register-panel">
+                        <div class="input-group">
+                            <label for="register-nickname">Никнейм</label>
+                            <input type="text" id="register-nickname" placeholder="Введите никнейм">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="register-password">Пароль</label>
+                            <input type="password" id="register-password" placeholder="Введите пароль">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="register-invite">Инвайт-ключ</label>
+                            <input type="text" id="register-invite" placeholder="Введите инвайт-ключ">
+                        </div>
+
+                        <button class="submit-btn" id="register-btn">Регистрация</button>
+                    </div>
+
+                    <div class="register-footer hidden" id="register-footer">
+                        Нажимая кнопку регистрации, вы соглашаетесь на сбор и хранение персональных данных, а также на сбор анонимной телеметрии.
+                    </div>
+
+                    <div class="status-text" id="status-text"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let w, h;
+        let startTime = null;
+        let glowIntensity = 0;
+        let dust = [];
+
+        function resize() {
+            w = window.innerWidth;
+            h = window.innerHeight;
+            canvas.width = w;
+            canvas.height = h;
+        }
+
+        function initDust() {
+            dust = [];
+            const count = Math.floor(w * h / 5000);
+            for (let i = 0; i < count; i++) {
+                dust.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.15,
+                    vy: (Math.random() - 0.5) * 0.1 - 0.05,
+                    size: 1 + Math.random() * 3,
+                    alpha: 0.1 + Math.random() * 0.4,
+                    brightness: 0.3 + Math.random() * 0.6
+                });
+            }
+        }
+
+        function updateDust() {
+            for (let p of dust) {
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.x < -20) p.x = w + 20;
+                if (p.x > w + 20) p.x = -20;
+                if (p.y < -20) p.y = h + 20;
+                if (p.y > h + 20) p.y = -20;
+
+                p.size += (Math.random() - 0.5) * 0.05;
+                p.size = Math.min(3.5, Math.max(0.8, p.size));
+
+                p.alpha += (Math.random() - 0.5) * 0.01;
+                p.alpha = Math.min(0.5, Math.max(0.08, p.alpha));
+            }
+        }
+
+        function draw() {
+            if (startTime === null) {
+                startTime = performance.now() / 1000;
+            }
+
+            const now = performance.now() / 1000;
+            const elapsed = now - startTime;
+
+            if (elapsed < 0.2) {
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(0, 0, w, h);
+                requestAnimationFrame(draw);
+                return;
+            }
+
+            let targetGlow = Math.min(1, (elapsed - 0.2) / 1.2);
+            targetGlow = Math.pow(targetGlow, 0.8);
+            targetGlow = Math.min(0.95, targetGlow);
+
+            glowIntensity = glowIntensity * 0.94 + targetGlow * 0.06;
+
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, w, h);
+
+            const bottomGlow = ctx.createLinearGradient(0, h, 0, h - h * 0.7);
+            bottomGlow.addColorStop(0, `rgba(20, 80, 210, ${0.35 * glowIntensity})`);
+            bottomGlow.addColorStop(0.3, `rgba(15, 55, 170, ${0.2 * glowIntensity})`);
+            bottomGlow.addColorStop(0.6, `rgba(8, 30, 110, ${0.08 * glowIntensity})`);
+            bottomGlow.addColorStop(1, `rgba(0, 0, 0, 0)`);
+            ctx.fillStyle = bottomGlow;
+            ctx.fillRect(0, 0, w, h);
+
+            const leftGlow = ctx.createLinearGradient(0, 0, w * 0.3, 0);
+            leftGlow.addColorStop(0, `rgba(10, 50, 150, ${0.12 * glowIntensity})`);
+            leftGlow.addColorStop(1, `rgba(0, 0, 0, 0)`);
+            ctx.fillStyle = leftGlow;
+            ctx.fillRect(0, 0, w, h);
+
+            const rightGlow = ctx.createLinearGradient(w, 0, w - w * 0.3, 0);
+            rightGlow.addColorStop(0, `rgba(10, 50, 150, ${0.1 * glowIntensity})`);
+            rightGlow.addColorStop(1, `rgba(0, 0, 0, 0)`);
+            ctx.fillStyle = rightGlow;
+            ctx.fillRect(0, 0, w, h);
+
+            for (let p of dust) {
+                const alphaVal = p.alpha * (0.3 + glowIntensity * 0.6);
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(80, 130, 220, ${alphaVal * 0.7})`;
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(p.x - p.size * 0.3, p.y - p.size * 0.3, p.size * 0.4, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(140, 180, 250, ${alphaVal * 0.4})`;
+                ctx.fill();
+            }
+
+            const lightSpread = ctx.createRadialGradient(w * 0.5, h - 50, 30, w * 0.5, h - 100, h * 0.8);
+            lightSpread.addColorStop(0, `rgba(60, 130, 240, ${0.18 * glowIntensity})`);
+            lightSpread.addColorStop(0.5, `rgba(30, 80, 180, ${0.08 * glowIntensity})`);
+            lightSpread.addColorStop(1, `rgba(0, 0, 0, 0)`);
+            ctx.fillStyle = lightSpread;
+            ctx.fillRect(0, 0, w, h);
+
+            ctx.fillStyle = `rgba(0, 0, 0, ${0.1 * (1 - glowIntensity * 0.7)})`;
+            ctx.fillRect(0, 0, w, h);
+
+            requestAnimationFrame(draw);
+        }
+
+        function animateDust() {
+            updateDust();
+            requestAnimationFrame(animateDust);
+        }
+
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const loginPanel = document.getElementById('login-panel');
+        const registerPanel = document.getElementById('register-panel');
+        const registerFooter = document.getElementById('register-footer');
+
+        function switchTab(tab) {
+            tabButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tab);
+            });
+
+            const isLogin = tab === 'login';
+            loginPanel.classList.toggle('active', isLogin);
+            registerPanel.classList.toggle('active', !isLogin);
+            registerFooter.classList.toggle('hidden', isLogin);
+            setStatus('');
+        }
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+        });
+
+        window.addEventListener('resize', () => {
+            resize();
+            initDust();
+        });
+
+        resize();
+        initDust();
+        draw();
+        animateDust();
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+        import {
+            getDatabase,
+            ref,
+            get,
+            set,
+            child
+        } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC5OL0rFQBE71Uj_GKm81THx8X_khXRgyI",
+            authDomain: "react-ae1b6.firebaseapp.com",
+            databaseURL: "https://react-ae1b6-default-rtdb.firebaseio.com",
+            projectId: "react-ae1b6",
+            storageBucket: "react-ae1b6.firebasestorage.app",
+            messagingSenderId: "309586870564",
+            appId: "1:309586870564:web:e6f28608abd7409a1633b1",
+            measurementId: "G-9TKD6SVYMM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const statusText = document.getElementById("status-text");
+        const loginBtn = document.getElementById("login-btn");
+        const registerBtn = document.getElementById("register-btn");
+
+        function setStatus(text, isError = false) {
+            statusText.textContent = text;
+            statusText.style.color = isError ? "#ff8b8b" : "rgba(255,255,255,0.85)";
+        }
+
+        async function generateNextUID() {
+    const snapshot = await get(ref(db, "users"));
+
+    if (!snapshot.exists()) {
+        return 1;
+    }
+
+    const users = snapshot.val();
+    let maxUID = 0;
+
+    for (const key in users) {
+        const currentUID = Number(users[key].UID) || 0;
+        if (currentUID > maxUID) {
+            maxUID = currentUID;
+        }
+    }
+
+    return maxUID + 1;
+}
+
+        async function sha256(text) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(text);
+            const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+        }
+
+        async function findUserByLogin(login) {
+            const snapshot = await get(ref(db, "users"));
+            if (!snapshot.exists()) return null;
+
+            const users = snapshot.val();
+            for (const uid in users) {
+                if (users[uid].Login === login) {
+                    return users[uid];
+                }
+            }
+            return null;
+        }
+
+       registerBtn.addEventListener("click", async () => {
+    const login = document.getElementById("register-nickname").value.trim();
+    const password = document.getElementById("register-password").value.trim();
+    const invite = document.getElementById("register-invite").value.trim();
+
+    if (!login || !password || !invite) {
+        setStatus("Заполни все поля", true);
+        return;
+    }
+
+    // ✅ ПРОВЕРКА ИНВАЙТА
+    const validInvites = ["test", "test2"];
+    if (!validInvites.includes(invite)) {
+        setStatus("Неверный инвайт-ключ", true);
+        return;
+    }
+
+    if (login.length < 3) {
+        setStatus("Логин должен быть минимум 3 символа", true);
+        return;
+    }
+
+    if (password.length < 4) {
+        setStatus("Пароль должен быть минимум 4 символа", true);
+        return;
+    }
+
+    try {
+        setStatus("Регистрация...");
+
+        const existingUser = await findUserByLogin(login);
+        if (existingUser) {
+            setStatus("Такой логин уже существует", true);
+            return;
+        }
+
+        const uid = await generateNextUID();
+        const passwordHash = await sha256(password);
+
+        const userData = {
+            Login: login,
+            Password: passwordHash,
+            UID: uid,
+            Role: "User",
+            ShopItems: {},
+            Balance: 0,
+            InviteKey: invite
+        };
+
+        await set(ref(db, "users/" + uid), userData);
+
+        sessionStorage.setItem("currentUserUID", uid);
+        sessionStorage.setItem("currentUserLogin", login);
+
+        setStatus("Регистрация успешна, переходим...");
+        window.location.href = "profile.html";
+    } catch (error) {
+        console.error(error);
+        setStatus("Ошибка регистрации: " + error.message, true);
+    }
+});
+
+        loginBtn.addEventListener("click", async () => {
+            const login = document.getElementById("login-nickname").value.trim();
+            const password = document.getElementById("login-password").value.trim();
+
+            if (!login || !password) {
+                setStatus("Заполни логин и пароль", true);
+                return;
+            }
+
+            try {
+                setStatus("Вход...");
+
+                const user = await findUserByLogin(login);
+                if (!user) {
+                    setStatus("Пользователь не найден", true);
+                    return;
+                }
+
+                const passwordHash = await sha256(password);
+
+                if (user.Password !== passwordHash) {
+                    setStatus("Неверный пароль", true);
+                    return;
+                }
+
+                sessionStorage.setItem("currentUserUID", user.UID);
+                sessionStorage.setItem("currentUserLogin", user.Login);
+
+                setStatus("Успешный вход, переходим...");
+                window.location.href = "profile.html";
+            } catch (error) {
+                console.error(error);
+                setStatus("Ошибка входа: " + error.message, true);
+            }
+        });
+
+        document.getElementById("login-password").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") loginBtn.click();
+        });
+
+        document.getElementById("register-invite").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") registerBtn.click();
+        });
+    </script>
+</body>
+</html>
