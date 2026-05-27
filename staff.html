@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Наш состав</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    background: #12131A;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #72737D;
+}
+
+body {
+    min-height: 100vh;
+    overflow-x: auto;
+}
+
+.page {
+    min-width: 1500px;
+    min-height: 1700px;
+    padding: 34px 80px 180px;
+}
+
+.safe {
+    position: relative;
+    width: 1500px;
+    min-height: 1500px;
+    margin: 0 auto;
+}
+
+.logo {
+    position: absolute;
+    left: 175px;
+    top: 0;
+    width: 98px;
+    height: 68px;
+
+}
+
+.title {
+    position: absolute;
+    top: 125px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #f2f2f4;
+    font-size: 48px;
+    font-weight: 400;
+    letter-spacing: 4px;
+    white-space: nowrap;
+}
+
+.tree {
+    position: absolute;
+    top: 310px;
+    left: 0;
+    width: 100%;
+    height: 1000px;
+}
+
+.spine {
+    position: absolute;
+    left: 50%;
+    top: 50px;
+    width: 4px;
+    height: 900px;
+    transform: translateX(-50%);
+    background: #3E3F48;
+    border-radius: 99px;
+}
+
+.line {
+    position: absolute;
+    height: 4px;
+    background: #3E3F48;
+    border-radius: 99px;
+}
+
+.line.left {
+    right: 50%;
+    width: 235px;
+}
+
+.line.right {
+    left: 50%;
+    width: 235px;
+}
+
+.l1 { top: 50px; }
+.l2 { top: 330px; }
+.l3 { top: 610px; }
+
+.r1 { top: 190px; }
+.r2 { top: 470px; }
+.r3 { top: 750px; }
+
+.member {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.member.left {
+    left: 175px;
+    flex-direction: row;
+}
+
+.member.right {
+    right: 175px;
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+.p1 { top: 0; }
+.p2 { top: 280px; }
+.p3 { top: 560px; }
+
+.p4 { top: 140px; }
+.p5 { top: 420px; }
+.p6 { top: 700px; }
+
+.avatar {
+    width: 104px;
+    height: 104px;
+    border-radius: 5px;
+    object-fit: cover;
+    opacity: .78;
+}
+
+.info {
+    min-width: 190px;
+}
+
+.name {
+    color: #72737D;
+    font-size: 34px;
+    line-height: 34px;
+    font-weight: 800;
+}
+
+.role {
+    color: #72737D;
+    font-size: 18px;
+    line-height: 21px;
+    font-weight: 400;
+}
+
+.music {
+    margin-top: 8px;
+    width: 176px;
+    height: 48px;
+    background: #1C1D24;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px;
+    box-shadow: 0 7px 20px rgba(0,0,0,.28);
+}
+
+.member.right .music {
+    margin-left: auto;
+}
+
+.cover {
+    width: 38px;
+    height: 38px;
+    border-radius: 4px;
+    object-fit: cover;
+    opacity: .9;
+}
+
+.track {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+}
+
+.track-title {
+    color: #aaaab3;
+    font-size: 10px;
+    line-height: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.artist {
+    color: #72737D;
+    font-size: 9px;
+    line-height: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.time {
+    color: #72737D;
+    font-size: 10px;
+    line-height: 11px;
+}
+
+.play {
+    width: 15px;
+    height: 15px;
+    border: 0;
+    flex: 0 0 auto;
+    cursor: pointer;
+    background: #282930;
+    clip-path: polygon(25% 15%, 25% 85%, 88% 50%);
+    opacity: .95;
+}
+
+.play.pause {
+    clip-path: none;
+    background:
+        linear-gradient(
+            90deg,
+            #72737D 0 35%,
+            transparent 35% 65%,
+            #72737D 65% 100%
+        );
+}
+
+.audio {
+    display: none;
+}
+
+.apply {
+    position: absolute;
+    left: 50%;
+    top: 1360px;
+    transform: translateX(-50%);
+    width: 355px;
+    text-align: center;
+}
+
+.apply-text {
+    color: #72737D;
+    font-size: 20px;
+    margin-bottom: 7px;
+}
+
+.apply-btn {
+    display: block;
+    width: 100%;
+    height: 47px;
+    line-height: 47px;
+    border-radius: 6px;
+    background: #1C1F27;
+    color: #72737D;
+    text-decoration: none;
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    transition: .2s ease;
+}
+
+.apply-btn:hover {
+    filter: brightness(1.12);
+}
+
+.agree {
+    margin-top: 8px;
+    color: #72737D;
+    font-size: 8px;
+    line-height: 10px;
+    opacity: .45;
+}
+
+@media (max-width: 900px) {
+    .page {
+        min-width: 0;
+        min-height: auto;
+        padding: 30px 18px 90px;
+    }
+
+    .safe {
+        width: 100%;
+        min-height: auto;
+    }
+
+    .logo {
+        position: relative;
+        left: auto;
+        top: auto;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .title {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        text-align: center;
+        margin-top: 34px;
+        font-size: 34px;
+    }
+
+    .tree {
+        position: relative;
+        top: auto;
+        margin-top: 70px;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 42px;
+        align-items: center;
+    }
+
+    .spine,
+    .line {
+        display: none;
+    }
+
+    .member,
+    .member.left,
+    .member.right {
+        position: relative;
+        left: auto;
+        right: auto;
+        top: auto;
+        width: min(390px, 100%);
+        text-align: left;
+        flex-direction: row;
+    }
+
+    .avatar {
+        width: 92px;
+        height: 92px;
+    }
+
+    .name {
+        font-size: 30px;
+    }
+
+    .apply {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        margin: 80px auto 0;
+        width: min(355px, 100%);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+    <main class="safe">
+
+        <img class="logo" src="assets/logo.png" alt="logo">
+
+        <h1 class="title">НАШ СОСТАВ</h1>
+
+        <section class="tree">
+            <div class="spine"></div>
+
+            <div class="line left l1"></div>
+            <div class="line left l2"></div>
+            <div class="line left l3"></div>
+
+            <div class="line right r1"></div>
+            <div class="line right r2"></div>
+            <div class="line right r3"></div>
+
+            <div class="member left p1">
+                <img class="avatar" src="assets/bloxsik.jpg" alt="">
+                <div class="info">
+                    <div class="name">bloxs1k</div>
+                    <div class="role">CEO</div>
+
+                    <div class="music">
+                        <img class="cover" src="assets/music/code80.png" alt="">
+                        <div class="track">
+                            <div class="track-title">I Feel Like Dying</div>
+                            <div class="artist">CODE80</div>
+                            <div class="time">00:00/00:00</div>
+                        </div>
+                        <button class="play" type="button"></button>
+                        <audio class="audio" preload="metadata" src="assets/music/code80.mp3"></audio>
+                    </div>
+                </div>
+            </div>
+
+            <div class="member left p2">
+                <img class="avatar" src="assets/forsasha.jpg" alt="">
+                <div class="info">
+                    <div class="name">Forsasha</div>
+                    <div class="role">Administrator</div>
+
+                    <div class="music">
+                        <img class="cover" src="assets/music/moscow.png" alt="">
+                        <div class="track">
+                            <div class="track-title">Моя Москва</div>
+                            <div class="artist">DJ Smash</div>
+                            <div class="time">00:00/00:00</div>
+                        </div>
+                        <button class="play" type="button"></button>
+                        <audio class="audio" preload="metadata" src="assets/music/moscow.mp3"></audio>
+                    </div>
+                </div>
+            </div>
+
+            <div class="member left p3">
+                <img class="avatar" src="assets/atlas.png" alt="">
+                <div class="info">
+                    <div class="name">atlas</div>
+                    <div class="role">C++ Coder</div>
+
+                    <div class="music">
+                        <img class="cover" src="assets/music/agent.png" alt="">
+                        <div class="track">
+                            <div class="track-title">Агентство нас...</div>
+                            <div class="artist">Sabu</div>
+                            <div class="time">00:00/00:00</div>
+                        </div>
+                        <button class="play" type="button"></button>
+                        <audio class="audio" preload="metadata" src="assets/music/agent.mp3"></audio>
+                    </div>
+                </div>
+            </div>
+
+            <div class="member right p4">
+                <img class="avatar" src="assets/userok.jpg" alt="">
+                <div class="info">
+                    <div class="name">u$erok</div>
+                    <div class="role">Deputy CEO</div>
+
+                    <div class="music">
+                        <img class="cover" src="assets/music/rostov.png" alt="">
+                        <div class="track">
+                            <div class="track-title">Ростов</div>
+                            <div class="artist">Кишлак</div>
+                            <div class="time">00:00/00:00</div>
+                        </div>
+                        <button class="play" type="button"></button>
+                        <audio class="audio" preload="metadata" src="assets/music/rostov.mp3"></audio>
+                    </div>
+                </div>
+            </div>
+
+            <div class="member right p5">
+                <img class="avatar" src="assets/ryba.png" alt="">
+                <div class="info">
+                    <div class="name">neryba.</div>
+                    <div class="role">Luau Coder</div>
+
+                    <div class="music">
+                        <img class="cover" src="assets/none.jpg" alt="">
+                        <div class="track">
+                            <div class="track-title">Трек не выбран</div>
+                            <div class="artist">reactdlc.su/da...</div>
+                            <div class="time">00:00/00:00</div>
+                        </div>
+                        <button class="play" type="button"></button>
+                        <audio class="audio" preload="metadata" src="assets/music/placeholder.mp3"></audio>
+                    </div>
+                </div>
+            </div>
+
+            <div class="member right p6">
+                <img class="avatar" src="assets/semen.png" alt="">
+                <div class="info">
+                    <div class="name">semen</div>
+                    <div class="role">Helper</div>
+
+                    <div class="music">
+                        <img class="cover" src="assets/music/le.png" alt="">
+                        <div class="track">
+                            <div class="track-title">6 Little Eggs</div>
+                            <div class="artist">B3nte</div>
+                            <div class="time">00:00/00:00</div>
+                        </div>
+                        <button class="play" type="button"></button>
+                        <audio class="audio" preload="metadata" src="assets/music/le.mp3"></audio>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="apply">
+            <div class="apply-text">здесь можешь быть и ты!</div>
+            <a class="apply-btn" href="#">ПОДАТЬ ЗАЯВКУ</a>
+            <div class="agree">
+                нажимая на кнопку вы соглашаетесь на обработку и хранение<br>
+                персональных данных
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script>
+const widgets = document.querySelectorAll(".music");
+
+function formatTime(seconds) {
+    if (!Number.isFinite(seconds)) return "00:00";
+
+    seconds = Math.floor(seconds);
+
+    const minutes = String(Math.floor(seconds / 60)).padStart(2, "0");
+    const secs = String(seconds % 60).padStart(2, "0");
+
+    return `${minutes}:${secs}`;
+}
+
+widgets.forEach(widget => {
+    const button = widget.querySelector(".play");
+    const audio = widget.querySelector(".audio");
+    const time = widget.querySelector(".time");
+
+    function updateTime() {
+        time.textContent = `${formatTime(audio.currentTime)}/${formatTime(audio.duration)}`;
+    }
+
+    button.addEventListener("click", async () => {
+        document.querySelectorAll(".audio").forEach(otherAudio => {
+            if (otherAudio !== audio) {
+                otherAudio.pause();
+                otherAudio.currentTime = 0;
+
+                const otherButton = otherAudio.closest(".music").querySelector(".play");
+                const otherTime = otherAudio.closest(".music").querySelector(".time");
+
+                otherButton.classList.remove("pause");
+                otherTime.textContent = `00:00/${formatTime(otherAudio.duration)}`;
+            }
+        });
+
+        if (audio.paused) {
+            try {
+                await audio.play();
+                button.classList.add("pause");
+            } catch (e) {
+                console.log("Audio play error:", e);
+            }
+        } else {
+            audio.pause();
+            button.classList.remove("pause");
+        }
+    });
+
+    audio.addEventListener("loadedmetadata", updateTime);
+    audio.addEventListener("timeupdate", updateTime);
+
+    audio.addEventListener("ended", () => {
+        button.classList.remove("pause");
+        audio.currentTime = 0;
+        updateTime();
+    });
+});
+</script>
+
+</body>
+</html>
